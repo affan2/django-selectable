@@ -25,7 +25,8 @@
             },
             prepareQuery: null,
             highlightMatch: true,
-            formatLabel: null
+            formatLabel: null,
+            autoFocus: true
         },
 
         _initDeck: function () {
