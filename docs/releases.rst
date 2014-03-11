@@ -1,11 +1,20 @@
 Release Notes
 ==================
 
-v0.8.0 (Released TBD)
+v0.8.0 (Released 2014-01-20)
 --------------------------------------
 
 - Widget media references now include a version string for cache-busting when upgrading django-selectable. Thanks to Ustun Ozgur.
-- Added compatibility code for *SelectWidgets to handle POST data for the default SelectWidget. Thanks to leo-the-manic.
+- Added compatibility code for \*SelectWidgets to handle POST data for the default SelectWidget. Thanks to leo-the-manic.
+- Development moved from Bitbucket to Github.
+- Update test suite compatibility with new test runner in Django 1.6. Thanks to Dan Poirier for the report and fix.
+- Tests now run on Travis CI.
+- Added French and Chinese translations.
+
+Backwards Incompatible Changes
+________________________________
+
+- Support for Django < 1.5 has been dropped. Most pieces should continue to work but there was an ugly JS hack to make django-selectable work nicely in the admin which too flakey to continue to maintain. If you aren't using the selectable widgets in inline-forms in the admin you can most likely continue to use Django 1.4 without issue.
 
 
 v0.7.0 (Released 2013-03-01)
@@ -211,7 +220,7 @@ _________________
 Bug Fixes
 _________________
 
-- Fixed issue with Enter key removing items from select multiple widgets `#24 <https://bitbucket.org/mlavin/django-selectable/issue/24/pressing-enter-when-autocomplete-input-box>`_
+- Fixed issue with Enter key removing items from select multiple widgets `#24 <https://github.com/mlavin/django-selectable/issues/24>`_
 
 
 Backwards Incompatible Changes
@@ -242,7 +251,7 @@ v0.1.2 (Released 2011-05-25)
 Bug Fixes
 _________________
 
-- Fixed issue `#17 <https://bitbucket.org/mlavin/django-selectable/issue/17/update-not-working>`_
+- Fixed issue `#17 <https://github.com/mlavin/django-selectable/issues/17>`_
 
 
 v0.1.1 (Release 2011-03-21)
