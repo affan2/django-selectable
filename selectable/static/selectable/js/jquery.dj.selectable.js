@@ -26,7 +26,9 @@
             prepareQuery: null,
             highlightMatch: true,
             formatLabel: null,
-            autoFocus: true
+            autoFocus: true,
+            delay: 500,
+            minLength: 2
         },
 
         _initDeck: function () {
@@ -90,7 +92,7 @@
             var $input = $(this.element);
             $input.removeClass('ui-state-error');
             this._setHidden(item);
-            if (item) {
+            if (item.value != '') {
                 if (this.allowMultiple) {
                     $input.val("");
                     this.term = "";
@@ -217,6 +219,10 @@
                             term: request.term
                         });
                     }
+                    if(!results.length) {
+                        var noResult = { value:"",label:"No results found" };
+                        results.push(noResult);
+                    }
                     return response(results);
                 }
 				$.getJSON(self.url, query, unwrapResponse);
@@ -247,8 +253,11 @@
             }
             li = $("<li></li>")
                 .data("item.autocomplete", item)
-                .append($("<a></a>").append(label))
-                .appendTo(ul);
+            if(item.value)
+                li.append($("<a></a>").append(label))
+            else
+                li.append(label)
+            li.appendTo(ul);
             if (item.page) {
                 li.addClass('selectable-paginator');
             }
