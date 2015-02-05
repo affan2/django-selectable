@@ -316,10 +316,6 @@
                     $input.val("");
                     this.term = "";
                 }
-                if (!data.item) {
-                    $input.val("");
-                    this.term = "";
-                }
             }
             // Call super trigger
             // This could be replaced by this._super() with jQuery UI 1.9
