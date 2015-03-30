@@ -1,6 +1,22 @@
 Release Notes
 ==================
 
+v0.9.0 (Released 2014-10-21)
+--------------------------------------
+
+This release primarily addresses incompatibility with Django 1.7. The app-loading refactor both
+broke the previous registration and at the same time provided better utilities in Django core to
+make it more robust.
+
+- Compatibility with Django 1.7. Thanks to Calvin Spealman for the fixes.
+- Fixes for Python 3 support.
+
+Backwards Incompatible Changes
+________________________________
+
+- Dropped support for jQuery < 1.7
+
+
 v0.8.0 (Released 2014-01-20)
 --------------------------------------
 
