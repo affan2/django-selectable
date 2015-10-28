@@ -78,6 +78,8 @@ class AutoCompleteSelectField(BaseAutoCompleteField):
                 if label in EMPTY_VALUES:
                     return None
                 value = lookup.create_item(label)
+                if value is None:
+                    raise ValidationError(self.error_messages['invalid_choice'])
             else:
                 value = lookup.get_item(pk)
                 if value is None:
