@@ -1,6 +1,4 @@
 "Base classes for lookup creation."
-from __future__ import unicode_literals
-
 import operator
 import re
 from functools import reduce

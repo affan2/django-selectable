@@ -10,6 +10,7 @@ __all__ = (
     'AutoCompleteSelectMultipleFieldTestCase',
 )
 
+
 class FieldTestMixin(object):
     field_cls = None
     lookup_cls = None
@@ -51,6 +52,7 @@ class FieldTestMixin(object):
         dotted_path = 'selectable.forms.fields.AutoCompleteSelectField'
         with self.assertRaises(TypeError):
             self.field_cls(dotted_path)
+
 
 class AutoCompleteSelectFieldTestCase(BaseSelectableTestCase, FieldTestMixin):
     field_cls = fields.AutoCompleteSelectField
@@ -97,7 +99,7 @@ class AutoCompleteSelectMultipleFieldTestCase(BaseSelectableTestCase, FieldTestM
     field_cls = fields.AutoCompleteSelectMultipleField
     lookup_cls = ThingLookup
 
-    def get_field_instance(self, limit=None, widget=None):
+    def get_field_instance(self, allow_new=False, limit=None, widget=None):
         return self.field_cls(self.lookup_cls, limit=limit, widget=widget)
 
     def test_clean(self):

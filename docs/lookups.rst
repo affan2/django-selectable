@@ -168,7 +168,7 @@ should set two class attributes: ``model`` and ``search_fields``.
 
     .. code-block:: python
 
-        from __future__ import unicode_literals
+
 
         from selectable.base import ModelLookup
         from selectable.registry import registry

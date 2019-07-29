@@ -1,7 +1,3 @@
-"Compatibility utilites for Python versions."
+"""Compatibility utilities for Python versions."""
 
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    # This can be removed when Python 2.7 support is dropped
-    from urlparse import urlparse
+from urllib.parse import urlparse

@@ -111,7 +111,7 @@ Suppose we have city model
 
     .. code-block:: python
 
-        from __future__ import unicode_literals
+
 
         from django.db import models
         from django.utils.encoding import python_2_unicode_compatible
@@ -131,7 +131,7 @@ Then in our lookup we will grab the state value and filter our results on it:
 
     .. code-block:: python
 
-        from __future__ import unicode_literals
+
 
         from selectable.base import ModelLookup
         from selectable.registry import registry
