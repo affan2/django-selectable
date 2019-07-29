@@ -74,7 +74,8 @@
                     icons: {
                         primary: this.options.removeIcon
                     },
-                    text: false
+                    text: false,
+                    disabled: this.disabled
                 },
                 button = $('<a>')
                 .attr('href', '#')
@@ -134,7 +135,8 @@
                     icons: {
                         primary: this.options.comboboxIcon
                     },
-                    text: false
+                    text: false,
+                    disabled: this.disabled
                 },
                 button = $("<a>")
                     .html("&nbsp;")
@@ -160,6 +162,7 @@
             this.hiddenSelector = ':input[data-selectable-type=hidden][name=' + this.hiddenName + ']';
             this.hiddenMultipleSelector = ':input[data-selectable-type=hidden-multiple][name=' + this.hiddenName + ']';
             this.selectableType = data.selectableType || data['selectable-type'];
+            this.disabled = $input.prop('disabled');
             if (this.allowMultiple) {
                 this.allowNew = false;
                 $input.val("");
@@ -275,7 +278,7 @@
                 ul.empty();
             }
             $input.data('page', null);
-            ul.zIndex($input.zIndex() + 1);
+            ul.css("zIndex", $input.css("zIndex") + 1);
             this._renderMenu(ul, items);
             // jQuery UI menu does not define deactivate
             if (this.menu.deactivate) {

@@ -58,10 +58,9 @@ against multiple versions of Django/Python. With tox installed you can run::
 to run all the version combinations. You can also run tox against a subset of supported
 environments::
 
-    tox -e py27-1.5.X
+    tox -e py27-django15
 
-This example will run the test against the latest 1.6.X and 1.5.X releases
-using Python 2.6 and 3.2. For more information on running/installing tox please see the
+For more information on running/installing tox please see the
 tox documentation: http://tox.readthedocs.org/en/latest/index.html
 
 Client side tests are written using `QUnit <http://docs.jquery.com/QUnit>`_. They
@@ -78,7 +77,7 @@ Building the Documentation
 --------------------------------------
 
 The documentation is built using `Sphinx <http://sphinx.pocoo.org/>`_
-and available on `Read the Docs <http://django-selectable.readthedocs.org/>`_. With
+and available on `Read the Docs <http://django-selectable.readthedocs.io/>`_. With
 Sphinx installed you can build the documentation by running::
 
     make html

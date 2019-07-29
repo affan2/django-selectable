@@ -3,10 +3,11 @@ from __future__ import division
 import json
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
+from django.test import override_settings
 
 from . import ThingLookup
-from .base import BaseSelectableTestCase, PatchSettingsMixin
+from .base import BaseSelectableTestCase
 
 
 __all__ = (
@@ -14,7 +15,8 @@ __all__ = (
 )
 
 
-class SelectableViewTest(PatchSettingsMixin, BaseSelectableTestCase):
+@override_settings(SELECTABLE_MAX_LIMIT=25)
+class SelectableViewTest(BaseSelectableTestCase):
 
     def setUp(self):
         super(SelectableViewTest, self).setUp()

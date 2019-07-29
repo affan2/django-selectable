@@ -1,18 +1,33 @@
+sudo: false
+
 language: python
 
 python:
-  - "2.7"
+  - "3.5"
+
+# Make sure all the python versions we need are pre-installed
+addons:
+  apt:
+    sources:
+    - deadsnakes
+    packages:
+    - python2.7
+    - python3.4
+    - python3.6
 
 env:
-  - TOXENV=py26-1.5.X,py32-1.5.X
-  - TOXENV=py26-1.6.X,py33-1.6.X
-  - TOXENV=py27-1.7.X,py33-1.7.X
+  - TOXENV=py27-django111,py34-django111,py35-django111,py36-django111
+  - TOXENV=py34-django20,py35-django20,py36-django20
+  - TOXENV=py35-django21,py36-django21
 
 install:
-  - pip install tox
+  - pip install tox pip wheel codecov -U
 
 script:
-    - tox
+  - tox
+
+after_success:
+  - codecov -e TOX_ENV
 
 branches:
   only:

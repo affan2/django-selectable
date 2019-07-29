@@ -2,13 +2,12 @@ from __future__ import unicode_literals
 
 import json
 
-from django import forms, VERSION as DJANGO_VERSION
+from django import forms
 from django.conf import settings
+from django.utils.encoding import force_text
 from django.utils.http import urlencode
-from django.utils.safestring import mark_safe
 
 from selectable import __version__
-from selectable.compat import force_text, flatatt
 from selectable.forms.base import import_lookup_class
 
 __all__ = (
@@ -45,8 +44,8 @@ class AutoCompleteWidget(forms.TextInput, SelectableMediaMixin):
     def update_query_parameters(self, qs_dict):
         self.qs.update(qs_dict)
 
-    def build_attrs(self, extra_attrs=None, **kwargs):
-        attrs = super(AutoCompleteWidget, self).build_attrs(extra_attrs, **kwargs)
+    def build_attrs(self, base_attrs, extra_attrs=None):
+        attrs = super(AutoCompleteWidget, self).build_attrs(base_attrs, extra_attrs)
         url = self.lookup_class.url()
         if self.limit and 'limit' not in self.qs:
             self.qs['limit'] = self.limit
@@ -64,15 +63,6 @@ class SelectableMultiWidget(forms.MultiWidget):
 
     def update_query_parameters(self, qs_dict):
         self.widgets[0].update_query_parameters(qs_dict)
-
-    if DJANGO_VERSION < (1, 6):
-        def _has_changed(self, initial, data):
-            "Detects if the widget was changed. This is removed in Django 1.6."
-            if initial is None and data is None:
-                return False
-            if data and not hasattr(data, '__iter__'):
-                data = self.decompress(data)
-            return super(SelectableMultiWidget, self)._has_changed(initial, data)
 
     def decompress(self, value):
         if value:
@@ -144,8 +134,8 @@ class AutoCompleteSelectWidget(_BaseSingleSelectWidget):
 
 class AutoComboboxWidget(AutoCompleteWidget, SelectableMediaMixin):
 
-    def build_attrs(self, extra_attrs=None, **kwargs):
-        attrs = super(AutoComboboxWidget, self).build_attrs(extra_attrs, **kwargs)
+    def build_attrs(self, base_attrs, extra_attrs=None):
+        attrs = super(AutoComboboxWidget, self).build_attrs(base_attrs, extra_attrs)
         attrs['data-selectable-type'] = 'combobox'
         return attrs
 
@@ -161,33 +151,43 @@ class LookupMultipleHiddenInput(forms.MultipleHiddenInput):
         self.lookup_class = import_lookup_class(lookup_class)
         super(LookupMultipleHiddenInput, self).__init__(*args, **kwargs)
 
-    def render(self, name, value, attrs=None, choices=()):
+    def get_context(self, name, value, attrs):
         lookup = self.lookup_class()
-        if value is None: value = []
-        final_attrs = self.build_attrs(attrs, type=self.input_type, name=name)
-        id_ = final_attrs.get('id', None)
-        inputs = []
-        model = getattr(self.lookup_class, 'model', None)
-        for i, v in enumerate(value):
-            item = None
-            if model and isinstance(v, model):
-                item = v
-                v = lookup.get_item_id(item)
-            input_attrs = dict(value=force_text(v), **final_attrs)
-            if id_:
-                # An ID attribute was given. Add a numeric index as a suffix
-                # so that the inputs don't all have the same ID attribute.
-                input_attrs['id'] = '%s_%s' % (id_, i)
-            if v:
-                item = item or lookup.get_item(v)
-                input_attrs['title'] = lookup.get_item_value(item)
-            inputs.append('<input%s />' % flatatt(input_attrs))
-        return mark_safe('\n'.join(inputs))
+        values = self._normalize_value(value)
+        values = list(values)  # force evaluation
 
-    def build_attrs(self, extra_attrs=None, **kwargs):
-        attrs = super(LookupMultipleHiddenInput, self).build_attrs(extra_attrs, **kwargs)
+        context = super(LookupMultipleHiddenInput, self).get_context(name, values, attrs)
+
+        # Now override/add to what super() did:
+        subwidgets = context['widget']['subwidgets']
+        for widget_ctx, item in zip(subwidgets, values):
+            input_value, title = self._lookup_value_and_title(lookup, item)
+            widget_ctx['value'] = input_value  # override what super() did
+            if title:
+                widget_ctx['attrs']['title'] = title
+        return context
+
+    def build_attrs(self, base_attrs, extra_attrs=None):
+        attrs = super(LookupMultipleHiddenInput, self).build_attrs(base_attrs, extra_attrs)
         attrs['data-selectable-type'] = 'hidden-multiple'
         return attrs
+
+    def _normalize_value(self, value):
+        if value is None:
+            value = []
+        return value
+
+    def _lookup_value_and_title(self, lookup, v):
+        model = getattr(self.lookup_class, 'model', None)
+        item = None
+        if model and isinstance(v, model):
+            item = v
+            v = lookup.get_item_id(item)
+        title = None
+        if v:
+            item = item or lookup.get_item(v)
+            title = lookup.get_item_value(item)
+        return force_text(v), title
 
 
 class _BaseMultipleSelectWidget(SelectableMultiWidget, SelectableMediaMixin):
@@ -225,22 +225,17 @@ class _BaseMultipleSelectWidget(SelectableMultiWidget, SelectableMediaMixin):
             value = self.get_compatible_postdata(data, name)
         return value
 
-    def render(self, name, value, attrs=None):
+    def build_attrs(self, base_attrs, extra_attrs=None):
+        attrs = super(_BaseMultipleSelectWidget, self).build_attrs(base_attrs, extra_attrs)
+        if 'required' in attrs:
+            attrs.pop('required')
+        return attrs
+
+    def render(self, name, value, attrs=None, renderer=None):
         if value and not hasattr(value, '__iter__'):
             value = [value]
         value = ['', value]
-        return super(_BaseMultipleSelectWidget, self).render(name, value, attrs)
-
-    if DJANGO_VERSION < (1, 6):
-        def _has_changed(self, initial, data):
-            """"
-            Detects if the widget was changed. This is removed in Django 1.6.
-
-            For the multi-select case we only care if the hidden inputs changed.
-            """
-            initial = ['', initial]
-            data = ['', data]
-            return super(_BaseMultipleSelectWidget, self)._has_changed(initial, data)
+        return super(_BaseMultipleSelectWidget, self).render(name, value, attrs, renderer)
 
 
 class AutoCompleteSelectMultipleWidget(_BaseMultipleSelectWidget):

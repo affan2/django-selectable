@@ -1,10 +1,7 @@
 from django import forms
 from django.forms.models import modelformset_factory
 
-try:
-    from localflavor.us.forms import USStateField, USStateSelect
-except ImportError:
-    from django.contrib.localflavor.us.forms import USStateField, USStateSelect
+from localflavor.us.forms import USStateField, USStateSelect
 
 import selectable.forms as selectable
 
@@ -74,6 +71,18 @@ class FruitForm(forms.Form):
         required=False,
         widget=selectable.AutoComboboxSelectMultipleWidget
     )
+    # AutoComboboxSelectMultipleField with disabled attribute
+    disabledmulticomboboxselect = selectable.AutoCompleteSelectMultipleField(
+        lookup_class=FruitLookup,
+        label='Disabled Selectable field',
+        required=False,
+        widget=selectable.AutoComboboxSelectMultipleWidget,
+        initial={'1', '2'},
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(FruitForm, self).__init__(*args, **kwargs)
+        self.fields['disabledmulticomboboxselect'].widget.attrs['disabled'] = 'disabled'
 
 
 class ChainedForm(forms.Form):
@@ -97,4 +106,3 @@ class FarmForm(forms.ModelForm):
 
 
 FarmFormset = modelformset_factory(Farm, FarmForm)
-

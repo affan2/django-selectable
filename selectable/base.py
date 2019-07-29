@@ -1,36 +1,25 @@
 "Base classes for lookup creation."
 from __future__ import unicode_literals
 
-import json
 import operator
 import re
 from functools import reduce
 
 from django.conf import settings
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
-from django.core.urlresolvers import reverse
-from django.core.serializers.json import DjangoJSONEncoder
-from django.http import HttpResponse
-from django.db.models import Q
+from django.http import JsonResponse
+from django.db.models import Q, Model
+from django.urls import reverse
+from django.utils.encoding import smart_text
 from django.utils.html import conditional_escape
 from django.utils.translation import ugettext as _
 
-from selectable.compat import smart_text
-from selectable.forms import BaseLookupForm
-
+from .forms import BaseLookupForm
 
 __all__ = (
     'LookupBase',
     'ModelLookup',
 )
-
-
-class JsonResponse(HttpResponse):
-    "HttpResponse subclass for returning JSON data."
-
-    def __init__(self, *args, **kwargs):
-        kwargs['content_type'] = 'application/json'
-        super(JsonResponse, self).__init__(*args, **kwargs)
 
 
 class LookupBase(object):
@@ -45,6 +34,13 @@ class LookupBase(object):
         name = '%s-%s' % (app_name, class_name)
         return name
     name = classmethod(_name)
+
+    def split_term(self, term):
+        """
+        Split searching term into array of subterms
+        that will be searched separately.
+        """
+        return term.split()
 
     def _url(cls):
         return reverse('selectable-lookup', args=[cls.name()])
@@ -100,8 +96,7 @@ class LookupBase(object):
             term = options.get('term', '')
             raw_data = self.get_query(request, term)
             results = self.format_results(raw_data, options)
-        content = self.serialize_results(results)
-        return self.response(content)
+        return self.response(results)
 
     def format_results(self, raw_data, options):
         '''
@@ -123,10 +118,6 @@ class LookupBase(object):
         results['meta'] = meta
         return results
 
-    def serialize_results(self, results):
-        "Returns serialized results for sending via http."
-        return json.dumps(results, cls=DjangoJSONEncoder, ensure_ascii=False)
-
 
 class ModelLookup(LookupBase):
     "Lookup class for easily defining lookups based on Django models."
@@ -138,18 +129,16 @@ class ModelLookup(LookupBase):
     def get_query(self, request, term):
         qs = self.get_queryset()
         if term:
-            search_filters = []
             if self.search_fields:
-                for field in self.search_fields:
-                    search_filters.append(Q(**{field: term}))
-            qs = qs.filter(reduce(operator.or_, search_filters))
+                for t in self.split_term(term):
+                    search_filters = []
+                    for field in self.search_fields:
+                        search_filters.append(Q(**{field: t}))
+                    qs = qs.filter(reduce(operator.or_, search_filters))
         return qs
 
     def get_queryset(self):
-        try:
-            qs = self.model._default_manager.get_queryset()
-        except AttributeError:  # Django <= 1.5.
-            qs = self.model._default_manager.get_query_set()
+        qs = self.model._default_manager.get_queryset()
         if self.filters:
             qs = qs.filter(**self.filters)
         return qs
@@ -160,6 +149,7 @@ class ModelLookup(LookupBase):
     def get_item(self, value):
         item = None
         if value:
+            value = value.pk if isinstance(value, Model) else value
             try:
                 item = self.get_queryset().get(pk=value)
             except (ValueError, self.model.DoesNotExist):

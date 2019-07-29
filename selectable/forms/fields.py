@@ -26,7 +26,7 @@ def model_vars(obj):
 
 class BaseAutoCompleteField(forms.Field):
 
-    def _has_changed(self, initial, data):
+    def has_changed(self, initial, data):
         "Detects if the data was changed. This is added in 1.6."
         if initial is None and data is None:
             return False
@@ -40,6 +40,7 @@ class BaseAutoCompleteField(forms.Field):
             return model_vars(data) != model_vars(initial)
         else:
             return data != initial
+
 
 class AutoCompleteSelectField(BaseAutoCompleteField):
     widget = AutoCompleteSelectWidget
@@ -56,8 +57,6 @@ class AutoCompleteSelectField(BaseAutoCompleteField):
         if isinstance(widget, type):
             kwargs['widget'] = widget(lookup_class, allow_new=self.allow_new, limit=self.limit)
         super(AutoCompleteSelectField, self).__init__(*args, **kwargs)
-
-
 
     def to_python(self, value):
         if value in EMPTY_VALUES:

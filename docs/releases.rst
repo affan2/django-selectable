@@ -1,6 +1,61 @@
 Release Notes
 ==================
 
+
+v1.2.1 (Released 2019-02-02)
+--------------------------------------
+
+Fixed compatibility issue with jQuery UI 1.12. Thanks to Christian Klus (kluchrj) for the fix.
+
+
+v1.2.0 (Released 2018-10-13)
+--------------------------------------
+
+Primarily a Django support related release. This version adds support for Django 2.0 and 2.1 while
+dropping support for Django versions below 1.11. A number of deprecation warnings for future Django
+versions have also been addressed.
+
+Added the ability to search on multiple terms split by whitespace.
+
+
+Backwards Incompatible Changes
+________________________________
+
+- Dropped support for Django versions below 1.11
+
+
+v1.1.0 (Released 2018-01-12)
+--------------------------------------
+
+- Updated admin docs.
+- Added support for Django 1.11
+
+Special thanks to Luke Plant for contributing the fixes to support Django 1.11.
+
+
+v1.0.0 (Released 2017-04-14)
+--------------------------------------
+
+This project has been stable for quite some time and finally declaring a 1.0 release. With
+that comes new policies on official supported versions for Django, Python, jQuery, and jQuery UI.
+
+- New translations for German and Czech.
+- Various bug and compatibility fixes.
+- Updated example project.
+
+Special thanks to Raphael Merx for helping track down issues related to this release
+and an updating the example project to work on Django 1.10.
+
+Backwards Incompatible Changes
+________________________________
+
+- Dropped support Python 2.6 and 3.2
+- Dropped support for Django < 1.7. Django 1.11 is not yet supported.
+- ``LookupBase.serialize_results`` had been removed. This is now handled by the built-in ``JsonResponse`` in Django.
+- jQuery and jQuery UI versions for the ``include_jquery_libs`` and ``include_ui_theme`` template tags have been increased to 1.12.4 and 1.11.4 respectively.
+- Dropped testing support for jQuery < 1.9 and jQuery UI < 1.10. Earlier versions may continue to work but it is recommended to upgrade.
+
+
 v0.9.0 (Released 2014-10-21)
 --------------------------------------
 
