@@ -47,7 +47,7 @@ Lookup API
 .. py:method:: LookupBase.get_item_label(item)
 
     This is first of three formatting methods. The label is shown in the
-    drop down menu of search results. This defaults to ``item.__unicode__``.
+    drop down menu of search results. This defaults to ``item.__str__``.
 
     :param item: An item from the search results.
     :return: A string representation of the item to be shown in the search results.
@@ -58,7 +58,7 @@ Lookup API
 .. py:method:: LookupBase.get_item_id(item)
 
     This is second of three formatting methods. The id is the value that will eventually
-    be returned by the field/widget. This defaults to ``item.__unicode__``.
+    be returned by the field/widget. This defaults to ``item.__str__``.
 
     :param item: An item from the search results.
     :return: A string representation of the item to be returned by the field/widget.
@@ -75,7 +75,7 @@ Lookup API
 .. py:method:: LookupBase.get_item_value(item)
 
     This is last of three formatting methods. The value is shown in the
-    input once the item has been selected. This defaults to ``item.__unicode__``.
+    input once the item has been selected. This defaults to ``item.__str__``.
 
     :param item: An item from the search results.
     :return: A string representation of the item to be shown in the input.
