@@ -58,7 +58,7 @@ Once installed you should add the urls to your root url patterns::
 
     urlpatterns = [
         # Other patterns go here
-        url(r'^selectable/', include('selectable.urls')),
+        re_path(r'^selectable/', include('selectable.urls')),
     ]
 
 
